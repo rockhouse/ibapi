@@ -1301,23 +1301,20 @@ func (d *ibDecoder) processTickOptionComputationMsg(msgBuf *MsgBuffer) {
 
 	v := msgBuf.readInt()
 	reqID := msgBuf.readInt()
-	tickType := msgBuf.readInt()
+	_ = msgBuf.readInt() // tickType
+
+	// fmt.Printf("-------- v: %d ---- reqId: %d ---- test: %d  ", v, reqID, test)
 
 	impliedVol := msgBuf.readFloat()
 	delta := msgBuf.readFloat()
+	optPrice = msgBuf.readFloat()
+	pvDividend = msgBuf.readFloat()
+	gamma = msgBuf.readFloat()
+	vega = msgBuf.readFloat()
+	theta = msgBuf.readFloat()
+	undPrice = msgBuf.readFloat()
 
-	if v >= 6 || tickType == MODEL_OPTION || tickType == DELAYED_MODEL_OPTION {
-		optPrice = msgBuf.readFloat()
-		pvDividend = msgBuf.readFloat()
-	}
-
-	if v >= 6 {
-		gamma = msgBuf.readFloat()
-		vega = msgBuf.readFloat()
-		theta = msgBuf.readFloat()
-		undPrice = msgBuf.readFloat()
-
-	}
+	// }
 
 	switch {
 	case impliedVol < 0:
@@ -1345,7 +1342,9 @@ func (d *ibDecoder) processTickOptionComputationMsg(msgBuf *MsgBuffer) {
 		undPrice = UNSETFLOAT
 	}
 
-	d.wrapper.TickOptionComputation(reqID, tickType, impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice)
+	// v == reqID
+	// reqID == Tick types "Bid Option Computation" (#10), "Ask Option Computation" (#11), "Last Option Computation" (#12), and "Model Option Computation" (#13)
+	d.wrapper.TickOptionComputation(v, reqID, impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice)
 
 }
 
