@@ -346,3 +346,13 @@ func NewMarketOrder(action string, quantity float64) *Order {
 
 	return o
 }
+
+//Order using midpoint Algo
+func NewMidpriceOrder(action string, quantity float64) *Order {
+	o := NewOrder()
+	o.OrderType = "MIDPRICE"
+	o.Action = action          // BUY / SELL
+	o.TotalQuantity = quantity // 10 or 20
+
+	return o
+}
